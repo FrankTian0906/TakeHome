@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     * */
     public void buttonAddData(View view) throws IOException {
         readRoutesToDB();
+        Toast.makeText(this, "ADD DATA SUCCESSFULLY!", Toast.LENGTH_LONG).show();
     }
 
     /*
