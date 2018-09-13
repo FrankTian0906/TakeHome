@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -17,99 +16,61 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     MyMatabaseHelper myMatabaseHelper;
     private EditText editOrigin;
     private EditText editDestination;
-    private Button btnAddData;
-    private Button btnResults;
     private ListView dataListView;
-    private List<Routes> routes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editOrigin = (EditText)findViewById(R.id.origin_IATA);
-        editDestination = (EditText)findViewById(R.id.destination_IATA);
-        btnAddData = (Button)findViewById(R.id.btn_addData);
-        btnResults = (Button)findViewById(R.id.btn_Result);
-        dataListView = (ListView)findViewById(R.id.listView_Results);
+        editOrigin = findViewById(R.id.origin_IATA);
+        editDestination = findViewById(R.id.destination_IATA);
+        dataListView = findViewById(R.id.listView_Results);
         myMatabaseHelper = new MyMatabaseHelper(this);
     }
 
     /*
-    * push data from routers.csv into DB.table: routers
-    * !!include METHOD: addData()
-    * */
-    public void readRoutesToDB() throws IOException {
-        InputStream inputStream = getResources().openRawResource(R.raw.routes);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(inputStream, Charset.forName("UTF-8"))
-        );
-
-        // Initialization
-        String line = "";
-        try {
-            // Step over headers
-                reader.readLine();
-            // If buffer is not empty
-            while ((line = reader.readLine()) != null) {
-                Log.d("MyActivity","Get Line: " + line);
-                // use comma as separator columns of CSV
-                String[] tokens = line.split(",");
-                //add the data into db.table
-                addData(tokens[0],tokens[1],tokens[2]);
-            }
-
-        } catch (IOException e) {
-            // Logs error with priority level
-            Log.wtf("MyActivity", "Error reading data file on line" + line, e);
-            // Prints throwable details
-            e.printStackTrace();
-        }finally {
-            inputStream.close();
-        }
-
-    }
-    /*
-     * push data from airports.csv into DB.table: airports
-     * !!include METHOD: addData_air()
+     * push data from routers.csv into DB.table: routers
+     * !!include METHOD: addData()
+     * !!Huge data -> new thread
      * */
-    public void readRoutesToDB_air() throws IOException {
-        InputStream inputStream = getResources().openRawResource(R.raw.airports);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(inputStream, Charset.forName("UTF-8"))
-        );
-
-        // Initialization
-        String line = "";
-        try {
-            // Step over headers
-            reader.readLine();
-            // If buffer is not empty
-            while ((line = reader.readLine()) != null) {
-                Log.d("MyActivity","Get Line: " + line);
-                // use comma as separator columns of CSV
-                String[] tokens = line.split(",");
-                //add the data into db.table
-                addData_air(tokens[3]);
+    public void readRoutesToDB () throws IOException {
+        new Thread() {
+            public void run() {
+                InputStream inputStream = getResources().openRawResource(R.raw.routes);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(inputStream, Charset.forName("UTF-8"))
+                );
+                String line = "";
+                try{
+                    // Step over headers
+                    reader.readLine();
+                    // If buffer is not empty
+                    while ((line = reader.readLine()) != null) {
+                        Log.d("MyActivity", "Get Line: " + line);
+                        // use comma as separator columns of CSV
+                        String[] tokens = line.split(",");
+                        //add the data into db.table
+                        addData(tokens[0], tokens[1], tokens[2]);
+                        }
+                } catch (IOException e)
+                {
+                    // Logs error with priority level
+                    Log.wtf("MyActivity", "Error reading data file on line" + line, e);
+                    // Prints throwable details
+                    e.printStackTrace();
+                 }
             }
-
-        } catch (IOException e) {
-            // Logs error with priority level
-            Log.wtf("MyActivity", "Error reading data file on line" + line, e);
-            // Prints throwable details
-            e.printStackTrace();
-        }finally {
-            inputStream.close();
-        }
-
+         }.start();
     }
+
+
 
     /*
     * insert data to DB.table: routers
@@ -122,24 +83,12 @@ public class MainActivity extends AppCompatActivity {
         else
             Log.d("INSERT", "wrong!");
     }
-    /*
-     * insert data to DB.table: airports
-     * parameters: airport
-     * */
-    public void addData_air(String iata){
-        boolean insertData = myMatabaseHelper.addAirport(iata);
-        if(insertData)
-            Log.d("INSERT:"," Successfully!");
-        else
-            Log.d("INSERT", "wrong!");
-    }
 
     /*
     * BUTTON "ADD DATA" event listener
     * */
     public void buttonAddData(View view) throws IOException {
         readRoutesToDB();
-        readRoutesToDB_air();
     }
 
     /*
@@ -148,27 +97,29 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkName(){
         String ori = editOrigin.getText().toString();
         String des = editDestination.getText().toString();
-        Cursor data_ori = myMatabaseHelper.getData_air(ori);
-        Cursor data_des = myMatabaseHelper.getData_air(des);
+
+        // is empty
+        Log.d("CHECK_NULL", ori + " ; " + des);
+        if(ori.isEmpty() || des.isEmpty()) {
+            Toast.makeText(this, "Please input your origin and destination!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        //is 3 digits
+        else if(ori.length() != 3 || des.length() != 3 || !ori.matches("^[A-Z]*") || !des.matches("^[A-Z]*")){
+            Toast.makeText(this, "Please input correct IATA!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        Cursor data_ori = myMatabaseHelper.getData(ori);
+        Cursor data_des = myMatabaseHelper.getData(des);
         ArrayList<String> results_o = new ArrayList<>();
         ArrayList<String> results_d = new ArrayList<>();
         while(data_ori.moveToNext() && data_des.moveToNext()){
             results_o.add(data_ori.getString(0));
             results_d.add(data_des.getString(0));
         }
-        // is empty
-        if(editOrigin.getText().length() == 0 || editDestination.getText().length() == 0) {
-            Log.d("CHECK_NULL", ori + " ; " + des);
-            Toast.makeText(this, "Please input your origin and destination!", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        //is 3 digits
-        else if(ori.length() != 3 || des.length() != 3){
-            Toast.makeText(this, "Please input correct IATA!", Toast.LENGTH_LONG).show();
-            return false;
-        }
         // is existed
-        else if(results_o.isEmpty() || results_d.isEmpty()){
+        if(results_o.isEmpty() || results_d.isEmpty()){
             Toast.makeText(this, "Sorry, There is no IATA you input!", Toast.LENGTH_LONG).show();
             return false;
         }
@@ -188,10 +139,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    * show the results on the listview
+    * parameters: String ori, String des
+    * */
     public void showResult(String ori, String des){
         Cursor data = myMatabaseHelper.getData(ori,des);
+        //init results
         ArrayList<String> results = new ArrayList<>();
         while(data.moveToNext()){
+            //set the form of list item
             StringBuilder sb = new StringBuilder();
             int i = 0;
             while(!data.isNull(i)) {
@@ -207,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
             results.add(sb.toString());
         }
+        //is empty
         if(results.isEmpty())
             results.add("Sorry, there is no any line between two cities!");
 

@@ -3,23 +3,21 @@ package com.tianfei.takehometest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
+
 
 public class MyMatabaseHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "takeHome.db";
     private static final String TABLE_NAME = "routes";
-    private static final String TABLE_NAME_AIRPORT = "airports";
     private Context mContext;
 
     private static final String ID = "airlineID";
     private static final String ORIGIN = "origin";
     private static final String DESTINATION = "destination";
-    private static final String AIRPORTS = "airportsIATA";
+    //private static final String AIRPORTS = "airportsIATA";
 
     public MyMatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -32,11 +30,8 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
                 " (airlineID text, " +
                 "origin text, " +
                 "destination text)";
-        String newTable_airports = "create table " + TABLE_NAME_AIRPORT +
-                " (airportsIATA text)";
+
         db.execSQL(newTable);
-        db.execSQL(newTable_airports);
-        //Toast.makeText(mContext,"create table: routes!",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -58,24 +53,12 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    public boolean addAirport(String iata){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        if(iata != "\\N")
-            contentValues.put(AIRPORTS, iata);
-
-        long resut = db.insert(TABLE_NAME_AIRPORT,null,contentValues);
-        if(resut == -1)
-            return false;
-        else
-            return true;
-    }
-
-    public Cursor getData(){
+    public Cursor getData(String spot){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select * from "+ TABLE_NAME;
+        String query = "select * from "+ TABLE_NAME + " where " + ORIGIN + "=\'" + spot +"\'";
         return db.rawQuery(query,null);
     }
+
     /*
     * select a.*,b.* from routers a,routers b where a.`Destination`=b.`Origin` AND a.`Origin` = '起始' and b.`Destination` = '终点'
      * */
@@ -86,13 +69,6 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
                 " and a." + ORIGIN + "=\'" + origin + "\' and b." + DESTINATION + "=\'" + destination +"\'";
         return db.rawQuery(query,null);
 
-    }
-
-    public Cursor getData_air(String iata){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select * from "+ TABLE_NAME_AIRPORT + " where " + DESTINATION + "=\'" + iata +"\'";
-        Log.d("CHECKING_DB", query);
-        return db.rawQuery(query,null);
     }
 
 }
