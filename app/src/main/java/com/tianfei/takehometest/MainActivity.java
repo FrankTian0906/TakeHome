@@ -2,6 +2,7 @@ package com.tianfei.takehometest;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText editDestination;
     private ListView dataListView;
     private Intent intent;
+    private int spotMode = 0;
+    private List<Airports> airposts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +84,9 @@ public class MainActivity extends AppCompatActivity {
                         //add the data into db.table
                         addData_airports(tokens[0], tokens[1], tokens[2], tokens[3], lat, lon);
                     }
+                    Looper.prepare();
                     Toast.makeText(MainActivity.this, "Loading data successfully!", Toast.LENGTH_LONG).show();
+                    Looper.loop();
                 } catch (IOException e)
                 {
                     // Logs error with priority level
@@ -176,8 +183,11 @@ public class MainActivity extends AppCompatActivity {
         Cursor data = myMatabaseHelper.getData_trans_0(ori,des);
         if(!data.moveToNext()) {
             data = myMatabaseHelper.getData_trans_1(ori, des);
-            if(!data.moveToNext())
-                data = myMatabaseHelper.getData_trans_2(ori,des);
+            spotMode = 1;
+            if(!data.moveToNext()) {
+                data = myMatabaseHelper.getData_trans_2(ori, des);
+                spotMode = 2;
+            }
             else
                 data.moveToPrevious();
         }
@@ -186,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
         //init results
         ArrayList<String> results = new ArrayList<>();
+        List<String> spots = new ArrayList<>();
         while(data.moveToNext()){
             //set the form of list item
             StringBuilder sb = new StringBuilder();
@@ -195,31 +206,76 @@ public class MainActivity extends AppCompatActivity {
                     sb.append("AirLine: ").append(data.getString(i));
                 }
                 if((i+1)%3 == 2) {
-                    sb.append("\tOrigin: ").append(data.getString(i));
+                    sb.append(" Origin: ").append(data.getString(i));
+                    spots.add(data.getString(i));
                 }
-                if((i+1)%3 == 0 )
-                    sb.append("\t->\tDestination: ").append(data.getString(i)).append("\n");
+                if((i+1)%3 == 0 ) {
+                    sb.append(" ->  Destination: ").append(data.getString(i)).append("\n");
+                    spots.add(data.getString(i));
+                }
                 i++;
             }
             results.add(sb.toString());
+            spots = new ArrayList<String>(new HashSet<String>(spots));
+            Log.d("SPOTS",spots.toString());
         }
         //is empty
-        if(results.isEmpty())
-            results.add("Sorry, there is no any line between two cities!");
+        if(results.isEmpty()) {
+            Toast.makeText(this, "Sorry, there is no any lines between two cities!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        airposts = new ArrayList<Airports>();
+        for(int i=0;i< spots.size();i++){
+            airposts.add(getAirportsInfo(spots.get(i)));
+        }
 
         ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,results);
         dataListView.setAdapter(listAdapter);
         dataListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
-                    // 解析string， DB查找生成对象，传递对象
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         adapterView.getItemAtPosition(i);
-                        intent.putExtra("","");
+                        switch (spotMode){
+                            case 0:
+                                intent.putExtra("mode",0);
+                                intent.putExtra("origin",airposts.get(0));
+                                intent.putExtra("destination",airposts.get(1));
+                                break;
+                            case 1:
+                                intent.putExtra("mode",1);
+                                intent.putExtra("origin",airposts.get(0));
+                                intent.putExtra("transfer_1",airposts.get(1));
+                                intent.putExtra("destination",airposts.get(2));
+                                break;
+                            case 2:
+                                intent.putExtra("mode",2);
+                                intent.putExtra("origin",airposts.get(0));
+                                intent.putExtra("transfer_1",airposts.get(1));
+                                intent.putExtra("transfer_2",airposts.get(2));
+                                intent.putExtra("destination",airposts.get(3));
+                                break;
+                        }
+
                         startActivity(intent);
                     }
                 }
         );
     }
+
+    public Airports getAirportsInfo(String iata){
+        Cursor data = myMatabaseHelper.getAirport(iata);
+        Airports airports =new Airports();
+        if(data.moveToNext()){
+            airports.setName(data.getString(0));
+            airports.setCity(data.getString(1));
+            airports.setCountry(data.getString(2));
+            airports.setIATA(data.getString(3));
+            airports.setLatitude(data.getDouble(4));
+            airports.setLongitude(data.getDouble(5));
+        }
+        return airports;
+    };
 }
 

@@ -1,4 +1,5 @@
 TakeHome[Beta]
+
 1.Brief:
 
 It is coding for Take-Home-Test, and you can install the "app-debug.apk" on the Android(8.0+ Oreo) smartphone.
@@ -11,4 +12,8 @@ Second, after done First Step, users can input the origin and destination by IAT
 
 3.Main code part:
 
-TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MyMatabaseHelper.java TakeHome/app/src/main/res/layout/activity_main.xml
+TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MapActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MyMatabaseHelper.java TakeHome/app/src/main/res/layout/activity_main.xml
+
+Update:
+
+Adding Google-maps on the app, which means users can click the positions of the airports on the map.

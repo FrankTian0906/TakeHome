@@ -84,7 +84,7 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(AIRPORTS_IATA, iata);
         contentValues.put(AIRPORTS_LATITUDE,latitude);
         contentValues.put(AIRPORTS_LONGITUDE,longitude);
-        long resut = db.insert(TABLE_ROUTERS,null,contentValues);
+        long resut = db.insert(TABLE_AIRPORTS,null,contentValues);
         if(resut == -1)
             return false;
         else
@@ -125,6 +125,15 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
         String query = "select distinct a.* ,b.*,c.* from "+ TABLE_ROUTERS +" a," + TABLE_ROUTERS + "b," + TABLE_ROUTERS +
                 " c where a." + DESTINATION + "=b." + ORIGIN + " and b." + DESTINATION + "=c." + ORIGIN +
                 " and a." + ORIGIN + "=\'" + origin + "\' and c." + DESTINATION + "=\'" + destination +"\'";
+        return db.rawQuery(query,null);
+    }
+
+    /*
+     * select * from airports where IATA = '@iata'
+     * */
+    public Cursor getAirport(String iata){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select * from "+ TABLE_AIRPORTS + " where " + AIRPORTS_IATA + "=\'" + iata +"\'";
         return db.rawQuery(query,null);
     }
 }
