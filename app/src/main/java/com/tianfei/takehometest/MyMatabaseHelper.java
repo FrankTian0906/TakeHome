@@ -122,7 +122,7 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
     }
     public Cursor getData_trans_2(String origin,String destination){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select distinct a.* ,b.*,c.* from "+ TABLE_ROUTERS +" a," + TABLE_ROUTERS + "b," + TABLE_ROUTERS +
+        String query = "select distinct a.* ,b.*,c.* from "+ TABLE_ROUTERS +" a," + TABLE_ROUTERS + " b," + TABLE_ROUTERS +
                 " c where a." + DESTINATION + "=b." + ORIGIN + " and b." + DESTINATION + "=c." + ORIGIN +
                 " and a." + ORIGIN + "=\'" + origin + "\' and c." + DESTINATION + "=\'" + destination +"\'";
         return db.rawQuery(query,null);

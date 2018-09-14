@@ -146,13 +146,13 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        Cursor data_ori = myMatabaseHelper.getData(ori);
-        Cursor data_des = myMatabaseHelper.getData(des);
+        Cursor data_ori = myMatabaseHelper.getAirport(ori);
+        Cursor data_des = myMatabaseHelper.getAirport(des);
         ArrayList<String> results_o = new ArrayList<>();
         ArrayList<String> results_d = new ArrayList<>();
         while(data_ori.moveToNext() && data_des.moveToNext()){
-            results_o.add(data_ori.getString(0));
-            results_d.add(data_des.getString(0));
+            results_o.add(data_ori.getString(3));
+            results_d.add(data_des.getString(3));
         }
         // is existed
         if(results_o.isEmpty() || results_d.isEmpty()){
@@ -195,7 +195,9 @@ public class MainActivity extends AppCompatActivity {
             data.moveToPrevious();
 
         //init results
+        //for show on the list
         ArrayList<String> results = new ArrayList<>();
+        //for intent adding extra
         List<String> spots = new ArrayList<>();
         while(data.moveToNext()){
             //set the form of list item
@@ -224,12 +226,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Sorry, there is no any lines between two cities!", Toast.LENGTH_LONG).show();
             return;
         }
-
+        //product a Airports object according to the value of IATA
         airposts = new ArrayList<Airports>();
         for(int i=0;i< spots.size();i++){
             airposts.add(getAirportsInfo(spots.get(i)));
         }
-
+        //set listView
         ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,results);
         dataListView.setAdapter(listAdapter);
         dataListView.setOnItemClickListener(
@@ -264,6 +266,9 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * product a Airports object according to the value of IATA
+     */
     public Airports getAirportsInfo(String iata){
         Cursor data = myMatabaseHelper.getAirport(iata);
         Airports airports =new Airports();
