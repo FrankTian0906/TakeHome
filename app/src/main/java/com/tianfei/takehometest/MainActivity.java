@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText editDestination;
     private ListView dataListView;
     private Intent intent;
+    //mode 0-> 0 transfer station; 1-> 1 transfer station; 2-> 2 transfer stations
+    //should be final static int, ignore it.
     private int spotMode = 0;
-    private List<Airports> airposts;
+    private List<Airports> airports;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-     * push data from routers.csv into DB.table: routers
+     * push data from routers.csv into DB.table: routers, airports
      * !!include METHOD:    addData_routers()
      *                      addData_airports()
      * !!Huge data -> new thread
@@ -188,37 +190,45 @@ public class MainActivity extends AppCompatActivity {
                 data = myMatabaseHelper.getData_trans_2(ori, des);
                 spotMode = 2;
             }
-            else
+            else {
+                spotMode = 1;
                 data.moveToPrevious();
+            }
         }
-        else
+        else {
+            spotMode = 0;
             data.moveToPrevious();
+        }
 
         //init results
         //for show on the list
         ArrayList<String> results = new ArrayList<>();
         //for intent adding extra
-        List<String> spots = new ArrayList<>();
+        final List<List<String>> spots_str = new ArrayList<>();
+        spots_str.clear();
         while(data.moveToNext()){
             //set the form of list item
             StringBuilder sb = new StringBuilder();
+            //get IATAs of every list item and put it into List<List<String>> spots_str
+            List<String> spots = new ArrayList<>();
             int i = 0;
             while(!data.isNull(i)) {
                 if((i+1)%3 == 1) {
-                    sb.append("AirLine: ").append(data.getString(i));
+                    sb.append("\n").append("AirLine: ").append(data.getString(i));
                 }
                 if((i+1)%3 == 2) {
                     sb.append(" Origin: ").append(data.getString(i));
                     spots.add(data.getString(i));
                 }
                 if((i+1)%3 == 0 ) {
-                    sb.append(" ->  Destination: ").append(data.getString(i)).append("\n");
+                    sb.append(" ->  Destination: ").append(data.getString(i));
                     spots.add(data.getString(i));
                 }
                 i++;
             }
             results.add(sb.toString());
             spots = new ArrayList<String>(new HashSet<String>(spots));
+            spots_str.add(spots);
             Log.d("SPOTS",spots.toString());
         }
         //is empty
@@ -227,10 +237,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         //product a Airports object according to the value of IATA
-        airposts = new ArrayList<Airports>();
-        for(int i=0;i< spots.size();i++){
-            airposts.add(getAirportsInfo(spots.get(i)));
-        }
+        //airposts = new ArrayList<Airports>();
+        //for(int i=0;i< spots.size();i++){
+        //    airposts.add(getAirportsInfo(spots.get(i)));
+        //}
         //set listView
         ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,results);
         dataListView.setAdapter(listAdapter);
@@ -239,24 +249,31 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         adapterView.getItemAtPosition(i);
+                        //product a Airports object according to the value of IATA
+                        List<String> pots = spots_str.get(i);
+                        airports = new ArrayList<>();
+                        for(int j=0;j< pots.size();j++){
+                            airports.add(getAirportsInfo(pots.get(j)));
+                        }
+
                         switch (spotMode){
                             case 0:
                                 intent.putExtra("mode",0);
-                                intent.putExtra("origin",airposts.get(0));
-                                intent.putExtra("destination",airposts.get(1));
+                                intent.putExtra("origin",airports.get(0));
+                                intent.putExtra("destination",airports.get(1));
                                 break;
                             case 1:
                                 intent.putExtra("mode",1);
-                                intent.putExtra("origin",airposts.get(0));
-                                intent.putExtra("transfer_1",airposts.get(1));
-                                intent.putExtra("destination",airposts.get(2));
+                                intent.putExtra("origin",airports.get(0));
+                                intent.putExtra("transfer_1",airports.get(1));
+                                intent.putExtra("destination",airports.get(2));
                                 break;
                             case 2:
                                 intent.putExtra("mode",2);
-                                intent.putExtra("origin",airposts.get(0));
-                                intent.putExtra("transfer_1",airposts.get(1));
-                                intent.putExtra("transfer_2",airposts.get(2));
-                                intent.putExtra("destination",airposts.get(3));
+                                intent.putExtra("origin",airports.get(0));
+                                intent.putExtra("transfer_1",airports.get(1));
+                                intent.putExtra("transfer_2",airports.get(2));
+                                intent.putExtra("destination",airports.get(3));
                                 break;
                         }
 
@@ -281,6 +298,6 @@ public class MainActivity extends AppCompatActivity {
             airports.setLongitude(data.getDouble(5));
         }
         return airports;
-    };
+    }
 }
 

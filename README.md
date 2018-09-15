@@ -6,7 +6,7 @@ It is coding for Take-Home-Test, and you can install the "app-debug.apk" on the 
 
 2.Instructions for use:
 
-First, users should import the data by clicking "ADD DATA!" button, before searching. Notice, this button only needs to be clicked once
+First, users should import the data by clicking "ADD DATA!" button, before searching. [Notice] this button only needs to be clicked once!
 
 Second, after done First Step, users can input the origin and destination by IATA code, and click "SEARCH" button. Then, the following screen will show the results.
 
@@ -16,4 +16,5 @@ TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/a
 
 Update:
 
-Adding Google-maps on the app, which means users can click the positions of the airports on the map.
+Adding Google-maps on the app, which means users can check the positions of the airports and routes on the map.
+ METHOD: users click the list item of the result.
