@@ -4,6 +4,8 @@ TakeHome[Beta]
 
 It is coding for Take-Home-Test, and you can install the "app-debug.apk" on the Android(8.0+ Oreo) smartphone.
 
+DEMO Video Link: [video](https://drive.google.com/open?id=1-KYzfU4o94Yc4AklZVu6MlcEun_hl8UA)
+
 2.Instructions for use:
 
 First, users should import the data by clicking "ADD DATA!" button, before searching. [Notice] this button only needs to be clicked once!
