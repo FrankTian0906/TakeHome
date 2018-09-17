@@ -7,11 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,8 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         //is 3-digits
-        if(ori.length() != 3 || des.length() != 3 || !ori.matches("^[A-Z]*") || !des.matches("^[A-Z]*")){
+        if(ori.length() != 3 || des.length() != 3 || !ori.matches("^[A-Z]*") || !des.matches("^[A-Z]*") || ori.equals(des)){
             Toast.makeText(this, "Please input correct IATA!", Toast.LENGTH_LONG).show();
             return false;
         }
@@ -156,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
             results_o.add(data_ori.getString(3));
             results_d.add(data_des.getString(3));
         }
+        data_ori.close();
+        data_des.close();
         // is existed
         if(results_o.isEmpty() || results_d.isEmpty()){
             Toast.makeText(this, "Sorry, There is no IATA you input!", Toast.LENGTH_LONG).show();
@@ -165,6 +169,20 @@ public class MainActivity extends AppCompatActivity {
             return true;
     }
 
+    /**
+     * remove duplicated element on the string list
+     * @param list list
+     * @return List list
+     */
+    public List<String> removeDuplication(List<String> list){
+        for(int i = 0; i< list.size()-1;i++){
+            for(int j = i+1; j< list.size();j++){
+                if(list.get(i).equals(list.get(j)))
+                    list.remove(j);
+            }
+        }
+        return list;
+    }
     /**
      * BUTTON "RESEARCH" event listener
      * include method: showResult
@@ -180,7 +198,9 @@ public class MainActivity extends AppCompatActivity {
     /*
     * show the results on the listview
     * parameters: String ori, String des
+    * include METHOD: removeDuplication()
     * */
+    private List<Map<String,String>> listData = new ArrayList<>();
     public void showResult(String ori, String des){
         Cursor data = myMatabaseHelper.getData_trans_0(ori,des);
         if(!data.moveToNext()) {
@@ -199,18 +219,17 @@ public class MainActivity extends AppCompatActivity {
             spotMode = 0;
             data.moveToPrevious();
         }
-
         //init results
         //for show on the list
         ArrayList<String> results = new ArrayList<>();
-        //for intent adding extra
+        //for intent adding extra instance
         final List<List<String>> spots_str = new ArrayList<>();
         spots_str.clear();
         while(data.moveToNext()){
-            //set the form of list item
-            StringBuilder sb = new StringBuilder();
             //get IATAs of every list item and put it into List<List<String>> spots_str
             List<String> spots = new ArrayList<>();
+            //set the form of list item
+            StringBuilder sb = new StringBuilder();
             int i = 0;
             while(!data.isNull(i)) {
                 if((i+1)%3 == 1) {
@@ -226,24 +245,31 @@ public class MainActivity extends AppCompatActivity {
                 }
                 i++;
             }
-            results.add(sb.toString());
-            spots = new ArrayList<String>(new HashSet<String>(spots));
+            String res = sb.toString();
+            if(res.startsWith("\n"))
+                res = res.replaceFirst("\n", "");
+            results.add(res);
+
+            spots = removeDuplication(spots);
+            Log.d("SPOTS-after",spots.toString());
             spots_str.add(spots);
-            Log.d("SPOTS",spots.toString());
         }
         //is empty
         if(results.isEmpty()) {
             Toast.makeText(this, "Sorry, there is no any lines between two cities!", Toast.LENGTH_LONG).show();
             return;
         }
-        //product a Airports object according to the value of IATA
-        //airposts = new ArrayList<Airports>();
-        //for(int i=0;i< spots.size();i++){
-        //    airposts.add(getAirportsInfo(spots.get(i)));
-        //}
         //set listView
-        ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,results);
-        dataListView.setAdapter(listAdapter);
+        listData.clear();
+        for(String data_result: results){
+            Map<String , String> map = new HashMap<String, String>();
+            map.put("message",data_result);
+            listData.add(map);
+        }
+        LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.item_slide);
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this,listData,R.layout.item_list,new String[]{"message"},new  int[]{R.id.message});
+        dataListView.setAdapter(simpleAdapter);
+        dataListView.setLayoutAnimation(layoutAnimationController);
         dataListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -261,12 +287,14 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("mode",0);
                                 intent.putExtra("origin",airports.get(0));
                                 intent.putExtra("destination",airports.get(1));
+                                Log.d("0 INTENT->",airports.get(0).getIATA()+ airports.get(1).getIATA());
                                 break;
                             case 1:
                                 intent.putExtra("mode",1);
                                 intent.putExtra("origin",airports.get(0));
                                 intent.putExtra("transfer_1",airports.get(1));
                                 intent.putExtra("destination",airports.get(2));
+                                Log.d("1 INTENT->ORI DES",airports.get(0).getIATA()+ airports.get(1).getIATA()+ airports.get(2).getIATA());
                                 break;
                             case 2:
                                 intent.putExtra("mode",2);
@@ -274,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("transfer_1",airports.get(1));
                                 intent.putExtra("transfer_2",airports.get(2));
                                 intent.putExtra("destination",airports.get(3));
+                                Log.d("2 INTENT->ORI DES",airports.get(0).getIATA()+airports.get(1).getIATA()+airports.get(2).getIATA()+airports.get(3).getIATA());
                                 break;
                         }
 

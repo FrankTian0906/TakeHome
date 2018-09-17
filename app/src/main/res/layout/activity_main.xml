@@ -69,6 +69,8 @@
         android:layout_alignStart="@+id/textView_O"
         android:layout_alignTop="@+id/btn_addData"
         android:onClick="buttonShowResults"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
         android:text="Search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_D" />
@@ -82,6 +84,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="141dp"
         android:onClick="buttonAddData"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
         android:text="ADD DATA!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -93,7 +97,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:transcriptMode="normal"
+        android:padding="10dp"
+        android:divider="#00ffffff"
         android:layout_below="@id/btn_Result"/>
 
 

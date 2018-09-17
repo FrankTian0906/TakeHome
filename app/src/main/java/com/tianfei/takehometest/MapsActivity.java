@@ -1,7 +1,9 @@
 package com.tianfei.takehometest;
 
 import android.app.Dialog;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -44,10 +47,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (getIntent().getIntExtra("mode",0)){
             case 0:
                 mode = 0;
+
                 break;
             case 1:
                 mode = 1;
                 transfer_1 =  (Airports)getIntent().getSerializableExtra("transfer_1");
+
                 break;
             case 2:
                 mode  = 2;
@@ -84,6 +89,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
        //MapStyleOptions mapStyleOptions = MapStyleOptions.loadRawResourceStyle(this,R.raw.style_json);
        //googleMap.setMapStyle(mapStyleOptions);
        mMap = googleMap;
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style));
+
+            if (!success) {
+                Log.e("MAP style", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MAP style", "Can't find style. Error: ", e);
+        }
         setMap();
     }
     /**
@@ -95,11 +111,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         originMarker = new LatLng(origin.getLatitude(), origin.getLongitude());
         mMap.addMarker(new MarkerOptions().position(originMarker)
                 .title(origin.getName())
-                .snippet(origin.getIATA()));
+                .snippet(origin.getIATA())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
         destinationMarker = new LatLng(destination.getLatitude(),destination.getLongitude());
         mMap.addMarker(new MarkerOptions().position(destinationMarker)
                 .title(destination.getName())
-                .snippet(destination.getIATA()));
+                .snippet(destination.getIATA())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
         switch (mode){
             case 0:
@@ -141,7 +159,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void drawLine(LatLng origin, LatLng destination){
         mMap.addPolyline(new PolylineOptions().add(origin,destination)
-                .width(10).color(Color.MAGENTA).pattern(PATTERN).geodesic(true));
+                .width(10).color(Color.WHITE).pattern(PATTERN).geodesic(true));
+
     }
 
     //check service status

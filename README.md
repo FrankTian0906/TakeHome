@@ -18,3 +18,7 @@ Update:
 
 Adding Google-maps on the app, which means users can check the positions of the airports and routes on the map.
  METHOD: users click the list item of the result.
+
+Update_20180916:
+
+optimizaing UI with new look and animation, new Google Maps style.
