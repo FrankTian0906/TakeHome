@@ -1,4 +1,4 @@
-package com.tianfei.takehometest;
+package com.tianfei.takehometest.model;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -100,12 +100,10 @@ public class MyMatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery(query,null);
     }
     /*
-    *fixed
     * get data from table routers
     *   situation:  0 transfer station
     *               1 transfer station
     *               2 transfer station
-    * select a.*,b.* from routers a,routers b where a.`Destination`=b.`Origin` AND a.`Origin` = '@origin' and b.`Destination` = '@destination'
     * */
     public Cursor getData_trans_0(String origin,String destination){
         SQLiteDatabase db = this.getReadableDatabase();

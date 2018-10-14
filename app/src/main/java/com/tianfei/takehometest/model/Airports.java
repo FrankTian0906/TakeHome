@@ -1,4 +1,4 @@
-package com.tianfei.takehometest;
+package com.tianfei.takehometest.model;
 
 import java.io.Serializable;
 

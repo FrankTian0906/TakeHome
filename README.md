@@ -24,3 +24,9 @@ Adding Google-maps on the app, which means users can check the positions of the 
 Update_20180916:
 
 optimizaing UI with new look and animation, new Google Maps style.
+
+Update_20181010:
+
+Refactoring code by MVP pattern.
+Main code part:
+TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MapActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/model/ TakeHome/app/src/main/res/layout/presenter/ TakeHome/app/src/main/java/com/tianfei/takehometest/view/

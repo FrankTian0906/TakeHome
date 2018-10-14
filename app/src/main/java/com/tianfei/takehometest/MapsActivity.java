@@ -3,7 +3,6 @@ package com.tianfei.takehometest;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +21,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.tianfei.takehometest.model.Airports;
 
 import java.util.Arrays;
 import java.util.List;
