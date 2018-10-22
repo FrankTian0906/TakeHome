@@ -89,7 +89,6 @@ public class LoadDataModel implements Runnable{
         {
             // Logs error with priority level
             Log.wtf("LoadDataModel", "Error reading data file on line" + line, e);
-            // Prints throwable details
             e.printStackTrace();
         }
     }

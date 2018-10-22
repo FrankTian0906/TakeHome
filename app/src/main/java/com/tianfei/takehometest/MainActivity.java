@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         //bind presenters
         //loadDataPresenter = new LoadDataPresenter(getResources().openRawResource(R.raw.routes),getResources().openRawResource(R.raw.airports));
-        //loadDataPresenter.bind(this);
+        //loadDataPresenter.bind(this);;
         checkAirportsPresenter = new CheckAirportsPresenter();
         checkAirportsPresenter.bind(this);
         listPresenter = new ListPresenter();
