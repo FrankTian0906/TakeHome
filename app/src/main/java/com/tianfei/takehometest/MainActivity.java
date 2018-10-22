@@ -24,13 +24,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
     MyMatabaseHelper myMatabaseHelper;
-    private EditText editOrigin;
-    private EditText editDestination;
-    private ListView dataListView;
+    @BindView(R.id.origin_IATA) EditText editOrigin;
+    @BindView(R.id.destination_IATA) EditText editDestination;
+    @BindView(R.id.listView_Results) ListView dataListView;
     private Intent intent;
     //mode 0-> 0 transfer station; 1-> 1 transfer station; 2-> 2 transfer stations
     //should be final static int, ignore it.
@@ -48,18 +50,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editOrigin = findViewById(R.id.origin_IATA);
-        editDestination = findViewById(R.id.destination_IATA);
-        dataListView = findViewById(R.id.listView_Results);
         myMatabaseHelper = new MyMatabaseHelper(this);
         intent =new Intent(this, MapsActivity.class);
 
-        loadDataPresenter = new LoadDataPresenter(getResources().openRawResource(R.raw.routes),getResources().openRawResource(R.raw.airports));
-        loadDataPresenter.bind(this);
+        //bind presenters
+        //loadDataPresenter = new LoadDataPresenter(getResources().openRawResource(R.raw.routes),getResources().openRawResource(R.raw.airports));
+        //loadDataPresenter.bind(this);
         checkAirportsPresenter = new CheckAirportsPresenter();
         checkAirportsPresenter.bind(this);
         listPresenter = new ListPresenter();
         listPresenter.bind(this);
+        ButterKnife.bind(this);
     }
 
     /*

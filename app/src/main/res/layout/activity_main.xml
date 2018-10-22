@@ -5,101 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
+    android:padding="15dp"
+    android:background="@drawable/bg"
     android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView_O"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="35dp"
-        android:text="Origin:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.025"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057" />
 
     <EditText
         android:id="@+id/origin_IATA"
-        android:layout_width="303dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView_O"
-        android:layout_toEndOf="@+id/textView_D"
+        android:drawableLeft="@drawable/flight_takeoff"
+        android:drawablePadding="15dp"
         android:hint="ORIGIN IATA"
-        android:inputType="text|textCapCharacters"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.084"
-        app:layout_constraintStart_toEndOf="@+id/textView_O"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView_D"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="93dp"
-        android:text="Destination:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_O" />
+        android:inputType="text|textCapCharacters" />
 
     <EditText
         android:id="@+id/destination_IATA"
-        android:layout_width="306dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="78dp"
-        android:layout_toEndOf="@+id/textView_D"
+        android:layout_marginTop="15dp"
+        android:drawableLeft="@drawable/flight_land"
+        android:drawablePadding="15dp"
         android:hint="Destination IATA"
         android:inputType="text|textCapCharacters"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView_D"
-        app:layout_constraintTop_toBottomOf="@+id/origin_IATA" />
+        android:layout_below="@+id/origin_IATA"/>
 
     <Button
         android:id="@+id/btn_Result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView_O"
-        android:layout_alignTop="@+id/btn_addData"
         android:onClick="buttonShowResults"
         android:textColor="@android:color/white"
-        android:background="@android:color/holo_blue_light"
+        android:background="@drawable/button_bg"
+        android:fontFamily="sans-serif-light"
         android:text="Search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_D" />
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/destination_IATA"/>
 
     <Button
         android:id="@+id/btn_addData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="141dp"
+        android:layout_below="@+id/destination_IATA"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentRight="true"
         android:onClick="buttonAddData"
         android:textColor="@android:color/white"
-        android:background="@android:color/holo_blue_light"
+        android:background="@drawable/button_bg"
+        android:fontFamily="sans-serif-light"
         android:text="ADD DATA!"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/btn_Result"
-        app:layout_constraintTop_toBottomOf="@+id/textView_D" />
+
+         />
 
     <ListView
         android:id="@+id/listView_Results"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:divider="#00ffffff"
-        android:layout_below="@id/btn_Result"/>
+        android:divider="#00000000"
+        android:dividerHeight="10dp"
+        android:layout_below="@id/btn_Result"
+        android:layout_marginTop="15dp"/>
 
 
 </RelativeLayout>

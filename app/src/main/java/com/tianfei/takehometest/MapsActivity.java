@@ -86,8 +86,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-       //MapStyleOptions mapStyleOptions = MapStyleOptions.loadRawResourceStyle(this,R.raw.style_json);
-       //googleMap.setMapStyle(mapStyleOptions);
        mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
