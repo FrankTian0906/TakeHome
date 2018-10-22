@@ -29,4 +29,7 @@ Update_20181010:
 
 Refactoring code by MVP pattern.
 Main code part:
-TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MapActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/model/ TakeHome/app/src/main/res/layout/presenter/ TakeHome/app/src/main/java/com/tianfei/takehometest/view/
+TakeHome/app/src/main/java/com/tianfei/takehometest/MainActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/MapActivity.java TakeHome/app/src/main/java/com/tianfei/takehometest/model/ TakeHome/app/src/main/res/layout/presenter/ TakeHome/app/src/main/java/com/tianfei/takehometest/view/<br>
+
+New Look:
+<img src="https://github.com/FrankTian0906/TakeHome/raw/master/image_for_demo/Screenshot_20181022-170636.png" width="300"> 
